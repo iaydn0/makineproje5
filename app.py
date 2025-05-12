@@ -3,20 +3,20 @@ import streamlit as st
 import numpy as np
 import joblib
 
-st.title("MPG Tahmini - Linear, Ridge, PCA+LR ve KMeans")
+st.title("MPG Tahmini - Linear, Ridge, Decision Tree ve PCA+LR")
 
 model_name = st.selectbox("Model Seçin", [
     "Linear Regression",
     "Ridge Regression",
     "PCA + Linear Regression",
-    "KMeans (Sınıflandırma Amaçlı)"
+    "Decision Tree Regression"
 ])
 
 model_files = {
     "Linear Regression": "linear_model.pkl",
     "Ridge Regression": "ridge_model.pkl",
     "PCA + Linear Regression": "pca_lr_model.pkl",
-    "KMeans (Sınıflandırma Amaçlı)": "kmeans_model.pkl"
+    "Decision Tree Regression": "decision_tree_model.pkl"
 }
 
 # Girdiler
@@ -37,16 +37,11 @@ if st.button("Tahmin Et"):
     try:
         model = joblib.load(model_files[model_name])
 
-        # PCA gerekiyorsa önce dönüşüm yap
         if model_name == "PCA + Linear Regression":
             pca = joblib.load("pca_transform.pkl")
             input_data = pca.transform(input_data)
 
         prediction = model.predict(input_data)
-
-        if model_name == "KMeans (Sınıflandırma Amaçlı)":
-            st.success(f"Araç, {int(prediction[0])}. kümeye aittir.")
-        else:
-            st.success(f"{model_name} ile Tahmini MPG: {prediction[0]:.2f}")
+        st.success(f"{model_name} ile Tahmini MPG: {prediction[0]:.2f}")
     except Exception as e:
         st.error(f"Model yüklenemedi: {str(e)}")
